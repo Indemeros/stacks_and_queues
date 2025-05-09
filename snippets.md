@@ -1,174 +1,58 @@
 ## Snippet 1: Stack Basics
 
-A stack is a linear data structure that follows the Last-In-First-Out (LIFO) principle. Elements are added and removed from the same end, called the "top". Think of it like a stack of plates - you can only take from the top.
+A stack is like a pile of plates - you can only add or remove from the top. This is called Last-In-First-Out (LIFO). Imagine a stack of books: the last book you put on top is the first one you'll pick up. Stacks have simple operations: push (add to top), pop (remove from top), and peek (look at top without removing). They're great for tracking recent items or steps.
 
 ```python
-class Stack:
-    def __init__(self):
-        self.items = []
-    
-    def push(self, item):
-        self.items.append(item)
-    
-    def pop(self):
-        if not self.is_empty():
-            return self.items.pop()
-    
-    def peek(self):
-        if not self.is_empty():
-            return self.items[-1]
-    
-    def is_empty(self):
-        return len(self.items) == 0
+# Simple stack using a list
+stack = []
+stack.append("item1")  # push
+stack.append("item2")  # push
+top_item = stack.pop()  # removes and returns "item2"
 ```
 
 ## Snippet 2: Queue Basics
 
-A queue is a linear data structure following the First-In-First-Out (FIFO) principle. Elements are added at the rear and removed from the front, like people waiting in line for a service.
+A queue works like a line at a store - the first person to arrive gets served first (First-In-First-Out or FIFO). New items join at the back (enqueue) and leave from the front (dequeue). Think of a printer queue: documents print in the order they were sent. Queues are perfect when things need to be processed in the exact order they arrived.
 
 ```python
-class Queue:
-    def __init__(self):
-        self.items = []
-    
-    def enqueue(self, item):
-        self.items.append(item)
-    
-    def dequeue(self):
-        if not self.is_empty():
-            return self.items.pop(0)
-    
-    def front(self):
-        if not self.is_empty():
-            return self.items[0]
-    
-    def is_empty(self):
-        return len(self.items) == 0
+# Simple queue using a list
+queue = []
+queue.append("first")  # enqueue
+queue.append("second")  # enqueue
+first_item = queue.pop(0)  # dequeue returns "first"
 ```
 
 ## Snippet 3: Bracket Matching with Stack
 
-Stacks excel at validating balanced expressions, like checking if brackets are properly matched in a formula. Push opening brackets onto the stack and pop when matching closing brackets are found.
+Stacks are perfect for checking if brackets in code are balanced (every opening bracket has a matching closing bracket). When you see an opening bracket like '(' or '{', push it onto the stack. When you see a closing bracket, pop from the stack and check if it matches. If the stack is empty at the end, all brackets are matched properly!
 
 ```python
-def is_balanced(expression):
+def is_balanced(text):
     stack = []
-    brackets = {')': '(', '}': '{', ']': '['}
-    
-    for char in expression:
-        if char in '({[':
+    for char in text:
+        if char in "({[":
             stack.append(char)
-        elif char in ')}]':
-            if not stack or stack.pop() != brackets[char]:
-                return False
-    
+        elif char in ")}]" and (not stack or not matches(stack.pop(), char)):
+            return False
     return len(stack) == 0
 ```
 
-## Snippet 4: Queue Implementation with Two Stacks
+## Snippet 4: Circular Queue
 
-A queue can be implemented using two stacks. Elements are pushed onto stack1 for enqueue operations. For dequeue, elements are moved to stack2 (reversing order) if stack2 is empty.
+A circular queue is like a regular queue but connected end-to-end, like a circle. When we reach the end of the array, we wrap around to the beginning if there's space. This fixes the problem of wasting space at the front after dequeuing items. It needs two pointers: front (for dequeue) and rear (for enqueue), plus a way to track if it's full or empty.
 
-```python
-class QueueUsingStacks:
-    def __init__(self):
-        self.stack1 = []  # for enqueue
-        self.stack2 = []  # for dequeue
-    
-    def enqueue(self, item):
-        self.stack1.append(item)
-    
-    def dequeue(self):
-        if not self.stack2:
-            while self.stack1:
-                self.stack2.append(self.stack1.pop())
-        return self.stack2.pop() if self.stack2 else None
-```
+## Snippet 5: Priority Queue
 
-## Snippet 5: Circular Queue
+A priority queue is like a special line where people with emergencies get helped first. Each item has a priority value, and items with higher priority come out first, regardless of when they were added. This is different from regular queues where order of arrival matters. They're commonly used in hospital emergency rooms, task scheduling, and network routing.
 
-A circular queue optimizes array-based queue implementation by reusing space. When the rear reaches the end, it wraps around to the beginning if there's space, avoiding the need to shift elements.
+## Snippet 6: Stack in Function Calls
 
-```python
-class CircularQueue:
-    def __init__(self, capacity):
-        self.capacity = capacity
-        self.queue = [None] * capacity
-        self.front = self.size = 0
-        self.rear = capacity - 1
-    
-    def enqueue(self, item):
-        if self.size == self.capacity:
-            return False
-        self.rear = (self.rear + 1) % self.capacity
-        self.queue[self.rear] = item
-        self.size += 1
-        return True
-    
-    def dequeue(self):
-        if self.size == 0:
-            return None
-        item = self.queue[self.front]
-        self.front = (self.front + 1) % self.capacity
-        self.size -= 1
-        return item
-```
-
-## Snippet 6: Priority Queue
-
-A priority queue gives each element a priority and serves higher priority elements first. Often implemented using heaps, but this simple version uses a list with (priority, item) tuples.
-
-```python
-import heapq
-
-class PriorityQueue:
-    def __init__(self):
-        self.elements = []
-    
-    def enqueue(self, item, priority):
-        heapq.heappush(self.elements, (priority, item))
-    
-    def dequeue(self):
-        if self.elements:
-            return heapq.heappop(self.elements)[1]
-        return None
-```
+When your program calls functions, the computer uses a stack behind the scenes called the "call stack." When a function is called, it's pushed onto the stack. When the function finishes, it's popped off. This lets the program remember where to return after each function completes. If you call too many functions without returning (like in infinite recursion), you get a "stack overflow" error.
 
 ## Snippet 7: Stack-based DFS
 
-Depth-First Search uses a stack to explore as far as possible along each branch before backtracking. This makes stacks ideal for implementing iterative DFS traversals of graphs or trees.
-
-```python
-def dfs_iterative(graph, start):
-    visited = set()
-    stack = [start]
-    
-    while stack:
-        vertex = stack.pop()
-        if vertex not in visited:
-            print(vertex, end=" ")
-            visited.add(vertex)
-            # Add neighbors in reverse order to match recursive DFS
-            for neighbor in reversed(graph[vertex]):
-                if neighbor not in visited:
-                    stack.append(neighbor)
-```
+Depth-First Search explores a graph or tree by going as deep as possible before backtracking. A stack helps us remember where to go when we hit a dead end. We start at one node, then explore one neighbor completely before trying others. DFS is like exploring a maze by always following the left wall - you'll eventually explore the whole maze, going deep into each path before trying new routes.
 
 ## Snippet 8: Queue-based BFS
 
-Breadth-First Search uses a queue to explore all neighbors at the current depth before moving to nodes at the next depth level. Essential for finding shortest paths in unweighted graphs.
-
-```python
-def bfs(graph, start):
-    visited = set([start])
-    queue = [start]
-    
-    while queue:
-        vertex = queue.pop(0)
-        print(vertex, end=" ")
-        
-        for neighbor in graph[vertex]:
-            if neighbor not in visited:
-                visited.add(neighbor)
-                queue.append(neighbor)
-```
+Breadth-First Search explores a graph level by level, like ripples spreading from a stone dropped in water. We use a queue to visit all neighbors at the current depth before moving deeper. BFS is perfect for finding the shortest path in unweighted graphs. Imagine searching for a book in a library by first checking nearby shelves, then gradually moving to farther shelves.
